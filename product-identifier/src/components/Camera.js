@@ -2,13 +2,11 @@ import React, { useEffect,useState, useRef} from 'react';
 import bootstrap from "../../../node_modules/bootstrap/dist/css/bootstrap.css"
 import {addImage} from "../actions"
 import {useSelector, useDispatch} from "react-redux"
-
-
+import * as faceapi from '../../../node_modules/face-api.js'
 
 
 const Camera = () => {
     const [loaded, setLoaded] = useState(false)
-    const [source, setSource]= useState({});
     const [video, setVideo]=useState(false)
 
     const images = useSelector(state=>state.images)
@@ -18,7 +16,6 @@ const Camera = () => {
 
     const videoRef=useRef(null)
     const canvasRef=useRef(null)
-    const photoRef=useRef(null)
 
     const takeVideo = async ()=>{
        if('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices){
@@ -28,6 +25,9 @@ const Camera = () => {
        const stream = await navigator.mediaDevices.getUserMedia({video:true})
        videoRef.current.srcObject=stream;
        setVideo(true)
+
+
+       
        
        }
        catch{
@@ -35,6 +35,21 @@ const Camera = () => {
        }
     }
 
+
+    const detection=async ()=>{
+        Promise.all([
+        await faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
+        await faceapi.nets.faceLandmark68Net.loadFromUri('./models'),
+        await faceapi.nets.faceRecognitionNet.loadFromUri('./models'),          
+        await faceapi.nets.faceExpressionNet.loadFromUri('./models')
+        ])
+        if(video==true){
+        setInterval(async ()=>{
+            const detections= await faceapi.detectAllFaces(videoRef.current,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+            console.log(detections)
+        },100)
+    }
+    }
 
     const takePicture=()=>{
 
@@ -51,20 +66,16 @@ const Camera = () => {
     }
 
     useEffect(()=>{
-        
-        Promise.all([
-            faceapi.nets.tnyFaceDetector.loadFromUri('/models'),
-            faceapi.nets.faceLandmark68net.loadFromUri('/models'),
-            faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-            faceapi.nets.faceExpressionnet.loadFromUri('/models')
-        ]).then(setLoaded(true))
+       
+            setLoaded(true)
     },[])
 
     return ( 
         <div className="camera container">
+          
             {video ? null : loaded ? <button className="btn btn-primary camera-button" onClick={takeVideo}>Capture Product</button> : null}
             {video ? <button onClick={()=>takePicture()} className="btn btn-primary picture-button">Take Picture</button> : null}
-            <video ref={videoRef} width="720" height="560" id="video" autoPlay={true}>
+            <video onPlay={detection()} ref={videoRef} width="720" height="560" id="video" autoPlay={true}>
             <canvas ref={canvasRef} height="0" width="0"/>
 
             
