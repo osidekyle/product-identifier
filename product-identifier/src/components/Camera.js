@@ -1,10 +1,20 @@
 import React, { useEffect,useState, useRef} from 'react';
 import bootstrap from "../../../node_modules/bootstrap/dist/css/bootstrap.css"
+import {addImage} from "../actions"
+import {useSelector, useDispatch} from "react-redux"
+
+
+
 
 const Camera = () => {
     const [loaded, setLoaded] = useState(false)
     const [source, setSource]= useState({});
     const [video, setVideo]=useState(false)
+
+    const images = useSelector(state=>state.images)
+    const dispatch=useDispatch();
+
+
 
     const videoRef=useRef(null)
     const canvasRef=useRef(null)
@@ -36,24 +46,30 @@ const Camera = () => {
 
             const data = canvasRef.current.toDataURL("image/png");
             
-            photoRef.current.src=data
-        
+            dispatch(addImage(data));
+            console.log(images)
     }
 
     useEffect(()=>{
-        setLoaded(true);
+        
+        Promise.all([
+            faceapi.nets.tnyFaceDetector.loadFromUri('/models'),
+            faceapi.nets.faceLandmark68net.loadFromUri('/models'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+            faceapi.nets.faceExpressionnet.loadFromUri('/models')
+        ]).then(setLoaded(true))
     },[])
 
     return ( 
         <div className="camera container">
             {video ? null : loaded ? <button className="btn btn-primary camera-button" onClick={takeVideo}>Capture Product</button> : null}
             {video ? <button onClick={()=>takePicture()} className="btn btn-primary picture-button">Take Picture</button> : null}
-            <video ref={videoRef} id="video" autoPlay={true}>
+            <video ref={videoRef} width="720" height="560" id="video" autoPlay={true}>
             <canvas ref={canvasRef} height="0" width="0"/>
 
             
             </video>
-            <img ref={photoRef}/>
+            
         </div>
      );
 }
