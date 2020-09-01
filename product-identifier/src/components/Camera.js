@@ -36,20 +36,30 @@ const Camera = () => {
     }
 
 
-    const detection=async ()=>{
-        Promise.all([
-        await faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
-        await faceapi.nets.faceLandmark68Net.loadFromUri('./models'),
-        await faceapi.nets.faceRecognitionNet.loadFromUri('./models'),          
-        await faceapi.nets.faceExpressionNet.loadFromUri('./models')
-        ])
-        if(video==true){
+    const detection=async()=>{
+        
+        await faceapi.nets.tinyFaceDetector.loadFromUri('/models')
+        await faceapi.nets.faceLandmark68Net.loadFromUri('/models')
+        await faceapi.nets.faceRecognitionNet.loadFromUri('/models')          
+        await faceapi.nets.faceExpressionNet.loadFromUri('/models')
+
+        
+        if(video==true && loaded==true){
+
+        
+
         setInterval(async ()=>{
             const detections= await faceapi.detectAllFaces(videoRef.current,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
             console.log(detections)
-        },100)
-    }
-    }
+            if(detections[0]){
+            if(detections[0].expressions.happy>=.9)
+            {
+                takePicture()
+            }
+        }
+
+        },750)
+    }}
 
     const takePicture=()=>{
 
@@ -67,15 +77,18 @@ const Camera = () => {
 
     useEffect(()=>{
        
+             
+            
             setLoaded(true)
+            console.log("loaded")
     },[])
 
     return ( 
         <div className="camera container">
           
-            {video ? null : loaded ? <button className="btn btn-primary camera-button" onClick={takeVideo}>Capture Product</button> : null}
+            {video ? null : loaded ? <button className="btn btn-primary camera-button" onClick={takeVideo}>Start Taking Pictures</button> : null}
             {video ? <button onClick={()=>takePicture()} className="btn btn-primary picture-button">Take Picture</button> : null}
-            <video onPlay={detection()} ref={videoRef} width="720" height="560" id="video" autoPlay={true}>
+            <video onPlay={()=>detection()} ref={videoRef} width="720" height="560" id="video" autoPlay={true}>
             <canvas ref={canvasRef} height="0" width="0"/>
 
             
