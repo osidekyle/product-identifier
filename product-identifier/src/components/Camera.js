@@ -21,17 +21,18 @@ const Camera = () => {
        if('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices){
            console.log("oh hell yeahh");
        }
+       setVideo(true)
        try{
        const stream = await navigator.mediaDevices.getUserMedia({video:true})
        videoRef.current.srcObject=stream;
-       setVideo(true)
+       
 
 
        
        
        }
        catch{
-           console.log("make sure camera is on")
+           alert("Make sure your camera is on!")
        }
     }
 
@@ -85,15 +86,23 @@ const Camera = () => {
 
     return ( 
         <div className="camera container">
-          
-            {video ? null : loaded ? <button className="btn btn-primary camera-button" onClick={takeVideo}>Start Taking Pictures</button> : null}
-            {video ? <button onClick={()=>takePicture()} className="btn btn-primary picture-button">Take Picture</button> : null}
-            <video onPlay={()=>detection()} ref={videoRef} width="720" height="560" id="video" autoPlay={true}>
-            <canvas ref={canvasRef} height="0" width="0"/>
+            
+            {video ? 
+            <div className="d-flex justify-content-center">
+            <div className="row">
+                
+            <video onPlay={()=>detection()} ref={videoRef} width="720" height="560" id="video" autoPlay={true}><canvas ref={canvasRef} height="0" width="0"/></video>
+            </div>
+            </div>
 
+: null}
+        <div className="row d-flex justify-content-center">
+
+            {video ? null : loaded ? <button className="btn btn-primary justify-content-center camera-button" onClick={takeVideo}>Start Taking Pictures</button> : null}
+            {video ? <button onClick={()=>takePicture()} className="btn btn-primary justify-content-center picture-button">Take Picture</button> : null}
+             
             
-            </video>
-            
+        </div>
         </div>
      );
 }

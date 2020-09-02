@@ -10,7 +10,8 @@ export const imageReducer=(state= [],action)=>{
                 }
             })
             console.log(state)
-            return state
+            let newState=state.slice()
+            return newState
         default:
             return state;
     }
