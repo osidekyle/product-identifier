@@ -27,18 +27,16 @@ const Camera = () => {
        if('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices){
            console.log("oh hell yeahh");
        }
-       setVideo(true)
+       
        try{
+        
        const stream = await navigator.mediaDevices.getUserMedia({video:{width: { min: 640, ideal: 1920 },
         height: { min: 400, ideal: 1080 },
         aspectRatio: { ideal: 1.7777777778 }}})
         setHeight(stream.getVideoTracks()[0].getSettings().height)
         setWidth(stream.getVideoTracks()[0].getSettings().width)
+        setVideo(true)
        videoRef.current.srcObject=stream;
-       
-
-
-       
        
        }
        catch{
@@ -99,12 +97,10 @@ const Camera = () => {
             
             {video ? 
             <div className="d-flex justify-content-center">
-             <div className="row">
-                 
-                </div>
+             
             <div className="row">
                 
-            <video onPlay={()=>detection()} ref={videoRef} width="720" height="560" id="video" autoPlay={true}><canvas ref={canvasRef} height="0" width="0"/></video>
+            <video onPlay={()=>detection()} src="" ref={videoRef} width="720" height="560" id="video" autoPlay={true}><canvas ref={canvasRef} height="0" width="0"/></video>
             </div>
             </div>
 
