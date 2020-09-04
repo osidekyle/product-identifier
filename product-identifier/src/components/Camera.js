@@ -9,6 +9,12 @@ const Camera = () => {
     const [loaded, setLoaded] = useState(false)
     const [video, setVideo]=useState(false)
 
+
+
+
+    const[height,setHeight]=useState(0);
+    const[width,setWidth]=useState(0);
+
     const images = useSelector(state=>state.images)
     const dispatch=useDispatch();
 
@@ -23,7 +29,11 @@ const Camera = () => {
        }
        setVideo(true)
        try{
-       const stream = await navigator.mediaDevices.getUserMedia({video:true})
+       const stream = await navigator.mediaDevices.getUserMedia({video:{width: { min: 640, ideal: 1920 },
+        height: { min: 400, ideal: 1080 },
+        aspectRatio: { ideal: 1.7777777778 }}})
+        setHeight(stream.getVideoTracks()[0].getSettings().height)
+        setWidth(stream.getVideoTracks()[0].getSettings().width)
        videoRef.current.srcObject=stream;
        
 
@@ -66,9 +76,9 @@ const Camera = () => {
 
             var context=canvasRef.current.getContext('2d')
         
-            canvasRef.current.width=100
-            canvasRef.current.height=100
-            context.drawImage(videoRef.current,0,0,100,100)
+            canvasRef.current.width=width
+            canvasRef.current.height=height
+            context.drawImage(videoRef.current,0,0,width,height)
 
             const data = canvasRef.current.toDataURL("image/png");
             
@@ -89,6 +99,9 @@ const Camera = () => {
             
             {video ? 
             <div className="d-flex justify-content-center">
+             <div className="row">
+                 
+                </div>
             <div className="row">
                 
             <video onPlay={()=>detection()} ref={videoRef} width="720" height="560" id="video" autoPlay={true}><canvas ref={canvasRef} height="0" width="0"/></video>
@@ -99,7 +112,7 @@ const Camera = () => {
         <div className="row d-flex justify-content-center">
 
             {video ? null : loaded ? <button className="btn btn-primary justify-content-center camera-button" onClick={takeVideo}>Start Taking Pictures</button> : null}
-            {video ? <button onClick={()=>takePicture()} className="btn btn-primary justify-content-center picture-button">Take Picture</button> : null}
+            {video ? <button onClick={()=>takePicture()} className="btn btn-primary mb-5 justify-content-center picture-button">Take Picture</button> : null}
              
             
         </div>

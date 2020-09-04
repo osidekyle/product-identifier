@@ -9,9 +9,17 @@ export const imageReducer=(state= [],action)=>{
                     
                 }
             })
-            console.log(state)
             let newState=state.slice()
             return newState
+        case "REMOVE":
+            state.splice(action.payload,1);
+            console.log(state)
+            let otherState=state.slice()
+            return otherState;
+        case "CLEAR":
+            state=[];
+            let empty=state.slice()
+            return empty
         default:
             return state;
     }

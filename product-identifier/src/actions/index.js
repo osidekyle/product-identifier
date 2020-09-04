@@ -12,3 +12,16 @@ export const selectImage=(image)=>{
         payload:image
     }
 }
+
+
+export const remove=(index)=>{
+    return{
+        type:"REMOVE",
+        payload:index
+    }
+}
+export const clear=()=>{
+    return{
+        type:"CLEAR"
+    }
+}
