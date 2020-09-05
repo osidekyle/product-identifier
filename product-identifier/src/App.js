@@ -26,11 +26,11 @@ function App() {
      
       <Images/>
       
-      
+      {images.length>0 ?
       
       <Download/>
      
-      
+      : null}
     </div>
   );
 }
