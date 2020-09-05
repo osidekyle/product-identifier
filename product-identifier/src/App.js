@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import Camera from "./components/Camera"
 import Images from "./components/Images"
 import Header from "./components/Header"
@@ -27,11 +26,11 @@ function App() {
      
       <Images/>
       
-      {images.length>0 ?
+      
       
       <Download/>
      
-      : null}
+      
     </div>
   );
 }
